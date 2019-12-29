@@ -8,12 +8,11 @@ token = environ.get('token') # get token from .env
 
 bot = telebot.TeleBot(token) # init bot
 
-@bot.message_handler(commands=['start', 'help'])
-def send_welcome(message):
-	bot.reply_to(message, "Howdy, how are you doing?")
 
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-	bot.reply_to(message, message.text)
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['start'])
+def handle_start_help(message):
+        bot.send_message(message.chat.id,'<b>Приветсвую !</b>\ngdfgf\n',None,None,None,'html') # yeah so sad just for html
+        pass
 
 bot.polling() # START BOT !
