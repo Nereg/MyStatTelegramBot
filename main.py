@@ -41,7 +41,7 @@ def handle_group_top(message):
         top = API.GetClassLeaderboard(token)
         for place in top:
                 Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,None,None,None,'html',False) # yeah so sad just for html also disabling links preview
+        bot.send_message(message.chat.id,Mymessage,True,None,None,'html') # yeah so sad just for html also disabling links preview
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -53,7 +53,7 @@ def handle_group_top(message):
         top = API.GetStreamLeaderboard(token)
         for place in top:
                 Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,None,None,None,'html',False) # yeah so sad just for html
+        bot.send_message(message.chat.id,Mymessage,True,None,None,'html',False) # yeah so sad just for html
         pass
 
 bot.polling() # START BOT !
