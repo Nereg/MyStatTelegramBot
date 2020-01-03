@@ -3,6 +3,7 @@ from os import environ # for geting values from parsed env file
 from dotenv import load_dotenv # for parsing .env files
 import API # My MyStat API!
 import sqlite3# DB !!!
+import logging # logging
 
 #-------------------------------------------------
 #                   LOADING...
@@ -18,6 +19,8 @@ if debug == 'true': # small little convertion
         debug = True
 else:
         debug = False
+logger = telebot.logger #init logger
+telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 #-------------------------------------------------
 #                    INIT
@@ -25,10 +28,9 @@ else:
 
 bot = telebot.TeleBot(token) # init bot
 if debug:
-        conn = sqlite3.connect('main.sqlite') #init DB
+        db_path = 'test.sqlite'
 else:
-        conn = sqlite3.connect('test.sqlite') #init DB
-cursor = conn.cursor() # make cursor for DB 
+        db_path = 'main.sqlite'
 
 #-------------------------------------------------
 #                    TEXT
@@ -37,6 +39,20 @@ cursor = conn.cursor() # make cursor for DB
 hello_message = '<b>Приветсвую !</b>\nКороче да я бот\nМой создатель: <b>Олег Кисиль</b>!\nТы можешь к нему обращаться если будут какие либо вопросы.\nТак-же если хочешь узнать как работает этот бот можешь посмотреть исзодный код на <a href="https://github.com/Nereg/MyStatTelegramBot">github</a>\n<b>Удачи!</b>'
 
 help_message = '<b>Нужна помощь?</b>\nНе проблемма!\n Я имею несколько команд и вот их списокю\n/help - выводит эту помощь\nТак-же если думаешь что какая то моя часть работает неправильно или я не отвечаю можешь обратьться к моему\n Кстати вот <a href="tg://user?id={}">ссылочка</a> на него'.format(admin_id)
+
+#-------------------------------------------------
+#               HELPER FUNCTIONS
+#-------------------------------------------------
+
+def makeRequest(SQL,params=[]): # wow universal ! 
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(SQL,params)
+        # Если мы не просто читаем, но и вносим изменения в базу данных - необходимо сохранить транзакцию
+        conn.commit()
+        results = cursor.fetchall()
+        conn.close() # close connection to DB! (but I don`t think that this is good idea)
+        return results
 
 #-------------------------------------------------
 #                   COMMANDS
@@ -83,9 +99,16 @@ def handle_stream_top(message):
         bot.send_message(message.chat.id,Mymessage,True,None,None,'html',False) # yeah so sad just for html
         pass
 
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['test'])
+def test(message):     
+        logger.info('test!')
+        print(makeRequest('SELECT * FROM main'))
+        pass
+
+
 #-------------------------------------------------
 #                    START!
 #-------------------------------------------------
 
 bot.polling() # START BOT !
-conn.close() # close connection to DB!
