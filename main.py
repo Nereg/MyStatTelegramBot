@@ -4,6 +4,7 @@ from dotenv import load_dotenv # for parsing .env files
 import API # My MyStat API!
 import sqlite3# DB !!!
 import logging # logging
+from logging.handlers import TimedRotatingFileHandler
 
 #-------------------------------------------------
 #                   LOADING...
@@ -15,12 +16,16 @@ admin_id = environ.get('admin_id') # admin id
 password = environ.get('password') #default password
 APIusername = environ.get('APIusername') #default username for MyStat
 debug = environ.get('debug') #debug or not
+logging_path = environ.get('logging_path') #debug or not
 if debug == 'true': # small little convertion 
         debug = True
 else:
         debug = False
 logger = telebot.logger #init logger
-telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
+print(logging_path)
+handler = TimedRotatingFileHandler(logging_path+'main.log',when='midnight') #handler for writing logs to file and rotating them
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 #-------------------------------------------------
 #                    INIT
