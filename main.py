@@ -42,6 +42,9 @@ hello_message = '<b>Приветсвую !</b>\nКороче да я бот\nМ�
 
 help_message = '<b>Нужна помощь?</b>\nНе проблемма!\n Я имею несколько команд и вот их списокю\n/help - выводит эту помощь\nТак-же если думаешь что какая то моя часть работает неправильно или я не отвечаю можешь обратьться к моему\n Кстати вот <a href="tg://user?id={}">ссылочка</a> на него'.format(admin_id)
 
+notify_message = '<b>Уведомления</b>\nПока что в боте есть только один тип уведомлений : о новом дз.\n Скоро появятся и другие\nА пока подпишись на эти с помощью: /subscribe\n(Кстати скоро должны появиться более точные уведомления о новых дзшках! Только они потребуют логина в майстат)'
+
+subscribe_help_message = '<b>На какие уведомления ты хочешь подписаться?</b>\n/subscribe homeworks - уведомления о новых домашних заданиях'
 #-------------------------------------------------
 #               HELPER FUNCTIONS
 #-------------------------------------------------
@@ -81,19 +84,24 @@ def Logger(name):
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
-        bot.send_message(message.chat.id,hello_message,None,None,None,'html') # yeah so sad just for html
+        bot.send_message(message.chat.id,hello_message,parse_mode='html')
+        makeRequest('INSERT INTO users (TelegramChatId,TelegramId) VALUES (?,?)',(message.chat.id,message.from_user.id)) #store chat id and user if for later use
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['help'])
 def handle_help(message):
-        bot.send_message(message.chat.id,help_message,None,None,None,'html') # yeah so sad just for html
+        bot.send_message(message.chat.id,help_message,parse_mode='html') 
         pass
+
+#-------------------------------------------------
+#                    TOP
+#-------------------------------------------------
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['top'])
 def handle_top(message):
-        bot.send_message(message.chat.id,'Хочешь узнать топ группы ? /group Хочешь узнать топ паралели ? /stream',None,None,None,'html') # yeah so sad just for html
+        bot.send_message(message.chat.id,'Хочешь узнать топ группы ? /group Хочешь узнать топ паралели ? /stream',parse_mode='html')
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -105,7 +113,7 @@ def handle_group_top(message):
         top = API.GetClassLeaderboard(token)
         for place in top:
                 Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,True,None,None,'html') # yeah so sad just for html also disabling links preview
+        bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True)
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -117,15 +125,32 @@ def handle_stream_top(message):
         top = API.GetStreamLeaderboard(token)
         for place in top:
                 Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,True,None,None,'html',False) # yeah so sad just for html
+        bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True) 
         pass
+
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['notify'])
+def handle_notify(message):
+        bot.send_message(message.chat.id,notify_message,parse_mode='html') 
+        pass
+
+@bot.message_handler(commands=['subscribe'])
+def handle_subscribe(message):
+        params = message.text
+        params = params.split()
+        if 'homeworks' in params:
+                bot.send_message(message.chat.id,'Окей!\nМаякну если будут новые домашние задания!',parse_mode='html')
+                makeRequest('INSERT INTO subscriptions (Type,ChatId) VALUES (?,?)',(1,message.chat.id))
+        else:
+                bot.send_message(message.chat.id,subscribe_help_message,parse_mode='html') 
+        pass
+#-------------------------------------------------
+#                  TEST COMMANDS
+#-------------------------------------------------
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['test'])
 def test(message):     
-        log = Logger('test')
-        log.debug('test!')
-        print(makeRequest('SELECT * FROM main'))
         pass
 
 
