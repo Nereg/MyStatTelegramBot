@@ -1,9 +1,11 @@
 import telebot # maintelegram library
-from os import environ # for geting values from parsed env file
-from dotenv import load_dotenv # for parsing .env files
 import API # My MyStat API!
 import sqlite3# DB !!!
 import logging # logging
+import sys
+import logging.config
+from os import environ # for geting values from parsed env file
+from dotenv import load_dotenv # for parsing .env files
 from logging.handlers import TimedRotatingFileHandler
 
 #-------------------------------------------------
@@ -21,11 +23,6 @@ if debug == 'true': # small little convertion
         debug = True
 else:
         debug = False
-logger = telebot.logger #init logger
-print(logging_path)
-handler = TimedRotatingFileHandler(logging_path+'main.log',when='midnight') #handler for writing logs to file and rotating them
-logger.addHandler(handler)
-logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 #-------------------------------------------------
 #                    INIT
@@ -58,6 +55,25 @@ def makeRequest(SQL,params=[]): # wow universal !
         results = cursor.fetchall()
         conn.close() # close connection to DB! (but I don`t think that this is good idea)
         return results
+
+# ================== Logger ================================ (from https://stackoverflow.com/a/57021857/11544952 + some changes)
+def Logger(name):
+        #print to file
+        file_name = logging_path+'main.log'
+        formatter = logging.Formatter(fmt='%(asctime)s %(module)s,line: %(lineno)d %(levelname)8s | %(message)s',
+                                      datefmt='%Y/%m/%d %H:%M:%S') # %I:%M:%S %p AM|PM format
+        logging.basicConfig(filename = '%s' %(file_name),format= '%(asctime)s %(module)s,line: %(lineno)d %(levelname)8s | %(message)s',
+                                      datefmt='%Y/%m/%d %H:%M:%S', filemode = 'w', level = logging.DEBUG)
+        log_obj = logging.getLogger(name)
+        log_obj.setLevel(logging.DEBUG)
+
+        # console printer
+        screen_handler = logging.StreamHandler(stream=sys.stdout) #stream=sys.stdout is similar to normal print
+        screen_handler.setFormatter(formatter)
+        logging.getLogger(name).addHandler(screen_handler)
+
+        return log_obj
+    # =======================================================
 
 #-------------------------------------------------
 #                   COMMANDS
@@ -107,7 +123,8 @@ def handle_stream_top(message):
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['test'])
 def test(message):     
-        logger.info('test!')
+        log = Logger('test')
+        log.debug('test!')
         print(makeRequest('SELECT * FROM main'))
         pass
 
