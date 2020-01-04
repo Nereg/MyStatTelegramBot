@@ -3,3 +3,4 @@ Telegram API Lib : https://github.com/eternnoir/pyTelegramBotAPI
 Virtual envs : https://docs.python-guide.org/dev/virtualenvs/ 
 MyStat API (Version of 46d44a5ec61283202fb149e05d38f90bf30a2413 commit) : https://github.com/Nereg/MyStatAPI
 DB guide : https://habr.com/en/post/321510/
+py -m pip install (to install any package)

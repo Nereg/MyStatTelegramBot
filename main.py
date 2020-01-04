@@ -1,12 +1,8 @@
-import telebot # maintelegram library
-import API # My MyStat API!
-import sqlite3# DB !!!
-import logging # logging
-import sys
-import logging.config
+import time , logging.config, sys, logging, sqlite3, API, telebot
 from os import environ # for geting values from parsed env file
 from dotenv import load_dotenv # for parsing .env files
-from logging.handlers import TimedRotatingFileHandler
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 #-------------------------------------------------
 #                   LOADING...
@@ -25,6 +21,13 @@ else:
         debug = False
 
 #-------------------------------------------------
+#             PERIODICAL FUNCTIONS
+#-------------------------------------------------
+def CheckHomework(scheduler):
+        
+        return
+
+#-------------------------------------------------
 #                    INIT
 #-------------------------------------------------
 
@@ -34,6 +37,15 @@ if debug:
 else:
         db_path = 'main.sqlite'
 
+jobstores = {
+    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+}
+executors = {
+    'default': {'type': 'threadpool', 'max_workers': 5},
+}
+scheduler = BackgroundScheduler()
+job = scheduler.add_job(CheckHomework, 'interval', seconds=5,args=scheduler)
+scheduler.configure(jobstores=jobstores, executors=executors)
 #-------------------------------------------------
 #                    TEXT
 #-------------------------------------------------
@@ -157,5 +169,5 @@ def test(message):
 #-------------------------------------------------
 #                    START!
 #-------------------------------------------------
-
+scheduler.start() #start scheduler 
 bot.polling() # START BOT !
