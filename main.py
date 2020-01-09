@@ -23,9 +23,54 @@ else:
 #-------------------------------------------------
 #             PERIODICAL FUNCTIONS
 #-------------------------------------------------
-def CheckHomework(scheduler):
+def CheckHomework():
+        log = Logger('HomeworkCheck')
+        token  = API.getKey(password,APIusername) # get token for default login data
+        homeworks = API.GetHomeworks(token) #get count of homeworks
+        current = homeworks[3]
+        res = makeRequest('SELECT * FROM stuff WHERE Type=1')
+        last = int(res[0][1])
+        if (current > last):
+                makeRequest('UPDATE stuff SET Data=? WHERE Type=1',(str(current)))
+                log.debug('Yeah new hometasks !')
+                args = ('1',notification_messages)
+                scheduler.add_job(SendNotifications, 'interval', seconds=5,args=args,id='Sender')
+                return
+        elif (current == 0):
+                makeRequest('UPDATE stuff SET Data=? WHERE Type=1',(str(0)))
+                log.debug('Zero homeworks ! Yeah you done them !')
+        else:
+                log.debug('No new homework !')
+                return
+
+def SendNotifications(type,text):
+        scheduler.remove_job('Sender') # yeah remove yourself :/
+        log = Logger('NotificationSender')
+        log.debug('Started sending notifications for {} type!'.format(type))
+        List = makeRequest('SELECT * FROM subscriptions WHERE Type =?',(type))
+        ids = []
+        for user in List:
+                ids.append(user[2])
+        log.debug(f'Sending notifications to this ids: {ids}')
+        for ChatId in ids:
+                bot.send_message(int(ChatId),text[int(type)],parse_mode='html') 
         
-        return
+
+#-------------------------------------------------
+#                    TEXT
+#-------------------------------------------------
+
+hello_message = '<b>Приветсвую !</b>\nКороче да я бот\nМой создатель: <b>Олег Кисиль</b>!\nТы можешь к нему обращаться если будут какие либо вопросы.\nТак-же если хочешь узнать как работает этот бот можешь посмотреть исзодный код на <a href="https://github.com/Nereg/MyStatTelegramBot">github</a>\n<b>Удачи!</b>'
+
+help_message = '<b>Нужна помощь?</b>\nНе проблемма!\n Я имею несколько команд и вот их списокю\n/help - выводит эту помощь\nТак-же если думаешь что какая то моя часть работает неправильно или я не отвечаю можешь обратьться к моему\n Кстати вот <a href="tg://user?id={}">ссылочка</a> на него'.format(admin_id)
+
+notify_message = '<b>Уведомления</b>\nПока что в боте есть только один тип уведомлений : о новом дз.\n Скоро появятся и другие\nА пока подпишись на эти с помощью: /subscribe\n(Кстати скоро должны появиться более точные уведомления о новых дзшках! Только они потребуют логина в майстат)'
+
+subscribe_help_message = '<b>На какие уведомления ты хочешь подписаться?</b>\n/subscribe homeworks - уведомления о новых домашних заданиях'
+
+notification_messages = ['',
+        "Появилось новое домашнее задание!",
+]
 
 #-------------------------------------------------
 #                    INIT
@@ -44,19 +89,10 @@ executors = {
     'default': {'type': 'threadpool', 'max_workers': 5},
 }
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(CheckHomework, 'interval', seconds=5,args=scheduler)
+args = ('1',notification_messages)
+job = scheduler.add_job(CheckHomework, 'interval', seconds=20)
 scheduler.configure(jobstores=jobstores, executors=executors)
-#-------------------------------------------------
-#                    TEXT
-#-------------------------------------------------
 
-hello_message = '<b>Приветсвую !</b>\nКороче да я бот\nМой создатель: <b>Олег Кисиль</b>!\nТы можешь к нему обращаться если будут какие либо вопросы.\nТак-же если хочешь узнать как работает этот бот можешь посмотреть исзодный код на <a href="https://github.com/Nereg/MyStatTelegramBot">github</a>\n<b>Удачи!</b>'
-
-help_message = '<b>Нужна помощь?</b>\nНе проблемма!\n Я имею несколько команд и вот их списокю\n/help - выводит эту помощь\nТак-же если думаешь что какая то моя часть работает неправильно или я не отвечаю можешь обратьться к моему\n Кстати вот <a href="tg://user?id={}">ссылочка</a> на него'.format(admin_id)
-
-notify_message = '<b>Уведомления</b>\nПока что в боте есть только один тип уведомлений : о новом дз.\n Скоро появятся и другие\nА пока подпишись на эти с помощью: /subscribe\n(Кстати скоро должны появиться более точные уведомления о новых дзшках! Только они потребуют логина в майстат)'
-
-subscribe_help_message = '<b>На какие уведомления ты хочешь подписаться?</b>\n/subscribe homeworks - уведомления о новых домашних заданиях'
 #-------------------------------------------------
 #               HELPER FUNCTIONS
 #-------------------------------------------------
@@ -87,6 +123,9 @@ def Logger(name):
         screen_handler.setFormatter(formatter)
         logging.getLogger(name).addHandler(screen_handler)
 
+        #integrate telobot
+        telebot.logger.addHandler(screen_handler)
+        telebot.logger.setLevel(logging.DEBUG)
         return log_obj
     # =======================================================
 

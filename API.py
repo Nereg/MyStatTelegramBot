@@ -63,7 +63,7 @@ def GetHomeworks(token):
         # Note L outputs only all done and overdue hometasks. Why ? Because I have only this types of homeworks on my accaunt (not 0!)
         url = 'https://msapi.itstep.org/api/v2/count/homework'
         get = GetWithHeader(token,url)
-        allH = get[5]['counter']
+        allH = get[4]['counter']
         done = get[0]['counter']
         overdue = get[2]['counter']
         current = get[1]['counter'] # I took position from old code so it may be wrong
