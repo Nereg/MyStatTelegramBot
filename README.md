@@ -1,1 +1,1 @@
-IDK if requirements.txt is working or not
+Docker is not working now ! 

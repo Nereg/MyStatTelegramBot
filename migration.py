@@ -1,6 +1,6 @@
 import sqlite3
 
-migration_file='test1.sqlite'
+migration_file='main.sqlite'
 
 conn = sqlite3.connect(migration_file)
 
