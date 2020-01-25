@@ -180,6 +180,12 @@ def sendAll(message):
         bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
         pass
 
+@bot.message_handler(commands=['status'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
+def status(message): 
+        text = "Привет!\nСейчас разегистрированно : {} пользователей!\nПодписано на уведомления: {} пользователей"
+        bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
+        pass
+
 
 #-------------------------------------------------
 #                    START!
