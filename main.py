@@ -58,7 +58,25 @@ def SendNotifications(type,text):
         log.debug(f'Sending notifications to this ids: {ids}')
         for ChatId in ids:
                 bot.send_message(int(ChatId),text[int(type)],parse_mode='html') 
-        
+
+def SendToAll(message):
+
+        scheduler.remove_job('SendToAll')
+        log = Logger('MassSender')
+        log.debug('Started')
+        sql = 'DELETE FROM users WHERE id NOT IN (SELECT *  FROM (SELECT MIN(id)FROM users GROUP BY TelegramChatId) temp)' #sql qury to delete all duplicates
+        makeRequest(sql)
+        log.debug('Cleared DB from clones!')
+        log.debug('Sending messages with "{}" message'.format(message))
+        List = makeRequest('SELECT * FROM users')
+        #log.debug(List)
+        ids = []
+        for user in List:
+                ids.append(user[1])
+        log.debug(f'Sending notifications to this ids: {ids}')
+        for ChatId in ids:
+                bot.send_message(int(ChatId),message,parse_mode='html') 
+
 
 #-------------------------------------------------
 #                    INIT
@@ -70,8 +88,7 @@ executors = {
     'default': {'type': 'threadpool', 'max_workers': 5},
 }
 scheduler = BackgroundScheduler()
-args = ('1',notification_messages)
-job = scheduler.add_job(CheckHomework, 'interval', seconds=20)
+job = scheduler.add_job(CheckHomework, 'interval', minutes=5)
 scheduler.configure(executors=executors)#working just ok witjout storage and made MANY warnings when using so I remove storage
 botname = "@"+bot.get_me().username 
 #-------------------------------------------------
@@ -147,9 +164,20 @@ def handle_subscribe(message):
 #-------------------------------------------------
 
 # Handles all text messages that contains the commands '/start' or '/help'.
-@bot.message_handler(commands=['test'])
+@bot.message_handler(commands=['test'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
 def test(message):  
         bot.send_message(message.chat.id,botname)
+        pass
+#-------------------------------------------------
+#                  ADMIN COMMANDS
+#-------------------------------------------------
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['sendAll'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
+def sendAll(message): 
+        params = message.text
+        params = params.split() #TODo add spits because of spaces
+        scheduler.add_job(SendToAll, 'interval', seconds=10,args=[params[1]],id='SendToAll')
+        bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
         pass
 
 

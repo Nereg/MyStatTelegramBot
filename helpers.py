@@ -23,7 +23,7 @@ def makeRequest(SQL,params=[]): # wow universal !
         conn.close() # close connection to DB! (but I don`t think that this is good idea)
         return results
 
-# ================== Logger ================================ (from https://stackoverflow.com/a/57021857/11544952 + some changes)
+# ================== Logger ================================ (from https://stackoverflow.com/a/57021857/11544952 + some changes) TODO add logging from APS shelduer
 def Logger(name):
         load_dotenv()
         logging_path = environ.get('logging_path')
