@@ -1,8 +1,9 @@
-import time , logging.config, sys, logging, sqlite3, API, telebot
+import time , logging.config, sys, logging, sqlite3, API, telebot ,random 
 from os import environ # for geting values from parsed env file
 from dotenv import load_dotenv # for parsing .env files
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from telebot import types # buttons !!!
 #own modules
 from helpers import *
 from strings import *
@@ -60,7 +61,6 @@ def SendNotifications(type,text):
                 bot.send_message(int(ChatId),text[int(type)],parse_mode='html') 
 
 def SendToAll(message):
-
         scheduler.remove_job('SendToAll')
         log = Logger('MassSender')
         log.debug('Started')
@@ -110,6 +110,9 @@ def handle_start(message):
 @bot.message_handler(commands=['help'])
 def handle_help(message):
         bot.send_message(message.chat.id,help_message.format(admin_id),parse_mode='html') 
+        if (isAdmin(message.from_user)):
+                bot.send_message(message.chat.id,'<b>Воу палехче ты админ!</b>',parse_mode='html')
+                bot.send_message(message.chat.id,'Вот список команд которые тебе доступны :\n/sendAll - прислать сообщение для всех пользователей бота! Даже с HTML но помоему нельзя вставить новую линию(но ты модешь это пофиксить ленивая ты задница)',parse_mode='html')
         pass
 
 #-------------------------------------------------
@@ -119,31 +122,11 @@ def handle_help(message):
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['top'])
 def handle_top(message):
-        bot.send_message(message.chat.id,'Хочешь узнать топ группы ? /group Хочешь узнать топ паралели ? /stream',parse_mode='html')
-        pass
-
-# Handles all text messages that contains the commands '/start' or '/help'.
-@bot.message_handler(commands=['group'])
-def handle_group_top(message):
-        Mymessage = 'Топ группы :\n'
-        global password,APIusername
-        token = API.getKey(password,APIusername)
-        top = API.GetClassLeaderboard(token)
-        for place in top:
-                Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True)
-        pass
-
-# Handles all text messages that contains the commands '/start' or '/help'.
-@bot.message_handler(commands=['stream'])
-def handle_stream_top(message):
-        Mymessage = 'Топ потока :\n'
-        global password,APIusername
-        token = API.getKey(password,APIusername)
-        top = API.GetStreamLeaderboard(token)
-        for place in top:
-                Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
-        bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True) 
+        markup = types.ReplyKeyboardMarkup(row_width=2,one_time_keyboard=True)
+        itembtn1 = types.KeyboardButton('Топ потока')
+        itembtn2 = types.KeyboardButton('Топ группы')
+        markup.add(itembtn1, itembtn2)
+        bot.send_message(message.chat.id,'Хочешь узнать топ группы ?',parse_mode='html',reply_markup=markup)
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -162,6 +145,13 @@ def handle_subscribe(message):
         else:
                 bot.send_message(message.chat.id,subscribe_help_message,parse_mode='html') 
         pass
+
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['share'])
+def handle_top(message):
+        link = "t.me/"+bot.get_me().username
+        bot.send_message(message.chat.id,share_message.format(link,link),parse_mode='html')
+        pass
 #-------------------------------------------------
 #                  TEST COMMANDS
 #-------------------------------------------------
@@ -169,7 +159,11 @@ def handle_subscribe(message):
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['test'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
 def test(message):  
-        bot.send_message(message.chat.id,botname)
+        markup = types.ReplyKeyboardMarkup(row_width=2,one_time_keyboard=True)
+        itembtn1 = types.KeyboardButton('Топ потока')
+        itembtn2 = types.KeyboardButton('Топ группы')
+        markup.add(itembtn1, itembtn2)
+        bot.send_message(message.chat.id,botname,reply_markup=markup)
         pass
 #-------------------------------------------------
 #                  ADMIN COMMANDS
@@ -191,12 +185,40 @@ def sendAll(message):
         bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
         pass
 
+# Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['status'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
 def status(message): 
-        text = "Привет!\nСейчас разегистрированно : {} пользователей!\nПодписано на уведомления: {} пользователей"
-        bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
+        StatusText = "Зарегистрировано в боте: {} плебеев\nПодписано на уведомления: {}\nНу и как ты блин видишь я работаю !"
+        regCount = makeRequest("SELECT COUNT(*) FROM users")
+        notifyCount = makeRequest("SELECT COUNT(*) FROM subscriptions")
+        bot.send_message(message.chat.id,StatusText.format(regCount[0][0],notifyCount[0][0]))
         pass
 
+#-------------------------------------------------
+#                  DEFAULT HANDLER
+#-------------------------------------------------
+@bot.message_handler(regexp=".") # see https://docs.python.org/2/library/re.html#regular-expression-syntax
+def handleDefault(message): 
+        text = message.text
+        if (text == "Топ группы"):
+                Mymessage = 'Топ группы :\n'
+                global password,APIusername
+                token = API.getKey(password,APIusername)
+                top = API.GetClassLeaderboard(token)
+                for place in top:
+                        Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
+                bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True)
+        elif (text == "Топ потока"):
+                Mymessage = 'Топ потока :\n'
+                token = API.getKey(password,APIusername)
+                top = API.GetStreamLeaderboard(token)
+                for place in top:
+                        Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
+                bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True) 
+        else:
+                bot.send_message(message.chat.id,error_messages[random.randint(0,2)])
+                pass
+        pass
 
 #-------------------------------------------------
 #                    START!
