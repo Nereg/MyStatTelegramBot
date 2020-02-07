@@ -129,21 +129,12 @@ def handle_top(message):
         bot.send_message(message.chat.id,'Хочешь узнать топ группы ?',parse_mode='html',reply_markup=markup)
         pass
 
-# Handles all text messages that contains the commands '/start' or '/help'.
-@bot.message_handler(commands=['notify'])
-def handle_notify(message):
-        bot.send_message(message.chat.id,notify_message,parse_mode='html') 
-        pass
-
 @bot.message_handler(commands=['subscribe'])
 def handle_subscribe(message):
-        params = message.text
-        params = params.split()
-        if 'homeworks' in params:
-                bot.send_message(message.chat.id,'Окей!\nМаякну если будут новые домашние задания!',parse_mode='html')
-                makeRequest('INSERT INTO subscriptions (Type,ChatId) VALUES (?,?)',(1,message.chat.id))
-        else:
-                bot.send_message(message.chat.id,subscribe_help_message,parse_mode='html') 
+        markup = types.ReplyKeyboardMarkup(row_width=2,one_time_keyboard=True)
+        itembtn1 = types.KeyboardButton('Подписка на новые домашки')
+        markup.add(itembtn1)
+        bot.send_message(message.chat.id,subscribe_help_message,parse_mode='html',reply_markup=markup) 
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -215,6 +206,9 @@ def handleDefault(message):
                 for place in top:
                         Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
                 bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True) 
+        elif (text == "Подписка на новые домашки"):
+                bot.send_message(message.chat.id,'Окей!\nМаякну если будут новые домашние задания!',parse_mode='html')
+                makeRequest('INSERT INTO subscriptions (Type,ChatId) VALUES (?,?)',(1,message.chat.id))
         else:
                 bot.send_message(message.chat.id,error_messages[random.randint(0,2)])
                 pass
