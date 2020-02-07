@@ -2,17 +2,15 @@
 #TODO : make all this in one class to set some values from main code (but I can get config values)
 import logging , sqlite3 ,sys,telebot
 from os import environ # for geting values from parsed env file
-from dotenv import load_dotenv # for parsing .env files
 #-------------------------------------------------
 #               HELPER FUNCTIONS
 #-------------------------------------------------
 
 def makeRequest(SQL,params=[]): # wow universal ! 
-        load_dotenv() 
         if(environ.get('debug') == 'true'):
-                path = './test.sqlite'
+                path = '../test.sqlite'
         else:
-                path = './main.sqlite'
+                path = '../main.sqlite'
                 pass
         conn = sqlite3.connect(path) # yeah hardcoded 
         cursor = conn.cursor()
@@ -25,7 +23,6 @@ def makeRequest(SQL,params=[]): # wow universal !
 
 # ================== Logger ================================ (from https://stackoverflow.com/a/57021857/11544952 + some changes) TODO add logging from APS shelduer
 def Logger(name):
-        load_dotenv()
         logging_path = environ.get('logging_path')
         #print to file
         file_name = logging_path+'main.log'
@@ -48,7 +45,6 @@ def Logger(name):
 # =======================================================
 
 def isAdmin(user):
-        load_dotenv()
         adminId = int(environ.get('admin_id'))
         userId = user.id
         print(userId)

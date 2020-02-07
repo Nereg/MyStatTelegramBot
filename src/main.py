@@ -7,19 +7,21 @@ from telebot import types # buttons !!!
 #own modules
 from helpers import *
 from strings import *
-
+from dotenv import load_dotenv
+from pathlib import Path  # python3 only
 
 #-------------------------------------------------
 #                   LOADING...
 #-------------------------------------------------
-
-load_dotenv() 
+env_path = Path('..') / '.env'
+load_dotenv(dotenv_path=env_path)
 token = environ.get('token') # get token from .env
 admin_id = environ.get('admin_id') # admin id 
 password = environ.get('password') #default password
 APIusername = environ.get('APIusername') #default username for MyStat
 debug = environ.get('debug') #debug or not
 logging_path = environ.get('logging_path') #debug or not
+print(token)
 if debug == 'true': # small little convertion 
         debug = True
 else:
