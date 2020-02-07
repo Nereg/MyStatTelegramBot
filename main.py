@@ -99,8 +99,11 @@ botname = "@"+bot.get_me().username
 def handle_start(message):
         bot.send_message(message.chat.id,hello_message,parse_mode='html')
         if (isAdmin(message.from_user)):
-                bot.send_message(message.chat.id,'<b>Ты админ!</b>',parse_mode='html')
+                bot.send_message(message.chat.id,'<b>Воу палехче ты админ!</b>',parse_mode='html')
+                bot.send_message(message.chat.id,'Вот список команд которые тебе доступны :\n/sendAll - прислать сообщение для всех пользователей бота! Даже с HTML но помоему нельзя вставить новую линию(но ты модешь это пофиксить ленивая ты задница)',parse_mode='html')
         makeRequest('INSERT INTO users (TelegramChatId,TelegramId) VALUES (?,?)',(message.chat.id,message.from_user.id)) #store chat id and user if for later use
+        sql = 'DELETE FROM users WHERE id NOT IN (SELECT *  FROM (SELECT MIN(id)FROM users GROUP BY TelegramChatId) temp)' #sql qury to delete all duplicates
+        makeRequest(sql)
         pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
@@ -175,10 +178,10 @@ def test(message):
 @bot.message_handler(commands=['sendAll'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
 def sendAll(message): 
         params = message.text
-        params = params.split() #TODo add spits because of spaces
+        params = params.split()
         text = ""
         i = 0
-        for word in params: # не работет : пустое сообщение 
+        for word in params: 
                 if i ==0:
                         i +=1
                         continue
