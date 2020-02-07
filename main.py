@@ -176,7 +176,15 @@ def test(message):
 def sendAll(message): 
         params = message.text
         params = params.split() #TODo add spits because of spaces
-        scheduler.add_job(SendToAll, 'interval', seconds=10,args=[params[1]],id='SendToAll')
+        text = ""
+        i = 0
+        for word in params: # не работет : пустое сообщение 
+                if i ==0:
+                        i +=1
+                        continue
+                text += " "+word
+                i += 1
+        scheduler.add_job(SendToAll, 'interval', seconds=10,args=[text],id='SendToAll')
         bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
         pass
 
