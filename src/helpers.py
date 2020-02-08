@@ -7,12 +7,7 @@ from os import environ # for geting values from parsed env file
 #-------------------------------------------------
 
 def makeRequest(SQL,params=[]): # wow universal ! 
-        if(environ.get('debug') == 'true'):
-                path = '../test.sqlite'
-        else:
-                path = '../main.sqlite'
-                pass
-        conn = sqlite3.connect(path) # yeah hardcoded 
+        conn = sqlite3.connect(environ.get('db_path')) # yeah hardcoded 
         cursor = conn.cursor()
         cursor.execute(SQL,params)
         # Если мы не просто читаем, но и вносим изменения в базу данных - необходимо сохранить транзакцию

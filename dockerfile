@@ -1,11 +1,10 @@
 FROM python:3
 
-WORKDIR /
+ADD ./ /main/
 
-COPY . .
-RUN pip install --no-cache-dir -r requirements.txt
-#migrate
-RUN python migration.py
+WORKDIR /main/
+RUN pip install -r requirements.txt
+RUN python /main/migration.py
+WORKDIR /main/src/
 
-
-CMD [ "python", "./main.py" ]
+CMD [ "python", "/main/src/main.py" ]

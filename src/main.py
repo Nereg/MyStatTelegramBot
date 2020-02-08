@@ -20,8 +20,6 @@ admin_id = environ.get('admin_id') # admin id
 password = environ.get('password') #default password
 APIusername = environ.get('APIusername') #default username for MyStat
 debug = environ.get('debug') #debug or not
-logging_path = environ.get('logging_path') #debug or not
-print(token)
 if debug == 'true': # small little convertion 
         debug = True
 else:
