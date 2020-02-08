@@ -13,14 +13,16 @@
 * Перейти в скачаную папку
 * Отредактировать [example.env](/example.env)
 * Переименовать его в .env
+* `pip install -r requirements.txt`
+* `py ./migration.py`
 * Перейти в src
-* 'py main.py'
+* `py main.py`
 ### 2 путь
 * Установить [Docker](https://en.wikipedia.org/wiki/Docker_(software))
 * Скачать (или склонировать) репозиторий
 * Перейти в скачаную папку
 * Отредактировать [example.env](/example.env)
 * Переименовать его в .env
-* 'docker build .'
-* Подождать пока появиться надпись: 'Successfully built АЙДИШНИК'
-* 'docker run -d --name ЛЮБОЕ_ИМЯ АЙДИШНИК'
+* `docker build .`
+* Подождать пока появиться надпись: `Successfully built АЙДИШНИК`
+* `docker run -d --name ЛЮБОЕ_ИМЯ АЙДИШНИК`
