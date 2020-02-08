@@ -1,7 +1,0 @@
-How to prase .ENV cofig file : https://pypi.org/project/python-dotenv/
-Telegram API Lib : https://github.com/eternnoir/pyTelegramBotAPI
-Virtual envs : https://docs.python-guide.org/dev/virtualenvs/ 
-MyStat API (Version of 291f3d49f6c87ede2fc891f436816d6f53eac259 commit) : https://github.com/Nereg/MyStatAPI
-DB guide : https://habr.com/en/post/321510/
-py -m pip install (to install any package)
-scheduler : https://apscheduler.readthedocs.io/en/stable/
