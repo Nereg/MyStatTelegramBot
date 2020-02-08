@@ -40,3 +40,5 @@ MyStat API (собственного производста)(версия ком
 Гайд по базе данных : https://habr.com/en/post/321510/
 
 Планировщик задач : https://apscheduler.readthedocs.io/en/stable/
+
+# English version is coming soon!
