@@ -126,7 +126,7 @@ def handle_top(message):
         itembtn1 = types.KeyboardButton('Топ потока')
         itembtn2 = types.KeyboardButton('Топ группы')
         markup.add(itembtn1, itembtn2)
-        bot.send_message(message.chat.id,'Хочешь узнать топ группы ?',parse_mode='html',reply_markup=markup)
+        bot.send_message(message.chat.id,'Хочешь узнать топ группы или потока?',parse_mode='html',reply_markup=markup)
         pass
 
 @bot.message_handler(commands=['subscribe'])
