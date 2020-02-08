@@ -26,3 +26,12 @@
 * `docker build .`
 * Подождать пока появиться надпись: `Successfully built АЙДИШНИК`
 * `docker run -d --name ЛЮБОЕ_ИМЯ АЙДИШНИК`
+
+## Полезная информация
+
+Парсим .env файлы : https://pypi.org/project/python-dotenv/
+Библиотека для телеграма: https://github.com/eternnoir/pyTelegramBotAPI
+Виртуальные окружения (VENV)(упс не используеться :/ ): https://docs.python-guide.org/dev/virtualenvs/ 
+MyStat API (собственного производста)(версия комита 291f3d4) : https://github.com/Nereg/MyStatAPI
+Гайд по базе данных : https://habr.com/en/post/321510/
+Планировщик задач : https://apscheduler.readthedocs.io/en/stable/
