@@ -7,7 +7,6 @@ from telebot import types # buttons !!!
 #own modules
 from helpers import *
 from strings import *
-from dotenv import load_dotenv
 from pathlib import Path  # python3 only
 
 #-------------------------------------------------
@@ -20,10 +19,7 @@ admin_id = environ.get('admin_id') # admin id
 password = environ.get('password') #default password
 APIusername = environ.get('APIusername') #default username for MyStat
 debug = environ.get('debug') #debug or not
-if debug == 'true': # small little convertion 
-        debug = True
-else:
-        debug = False
+debug = bool(debug) # convert string with bollean to bollean
 
 #-------------------------------------------------
 #             PERIODICAL FUNCTIONS
