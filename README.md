@@ -1,4 +1,4 @@
-# Телеграм бот для [MyStat](https://mystat.itstep.org/ru/auth/login/index) !
+# Телеграм бот для [MyStat](https://mystat.itstep.org/ru/auth/login/index) ! [![CodeFactor](https://www.codefactor.io/repository/github/nereg/mystattelegrambot/badge)](https://www.codefactor.io/repository/github/nereg/mystattelegrambot)
 ## Что умеет ?
 1. Показывать топ потока и группы с ссылочками на фотки !
 2. Уведомлять о новых домашках
