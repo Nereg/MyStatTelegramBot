@@ -104,7 +104,6 @@ def handle_start(message):
         makeRequest('INSERT INTO users (TelegramChatId,TelegramId) VALUES (?,?)',(message.chat.id,message.from_user.id)) #store chat id and user if for later use
         sql = 'DELETE FROM users WHERE id NOT IN (SELECT *  FROM (SELECT MIN(id)FROM users GROUP BY TelegramChatId) temp)' #sql qury to delete all duplicates
         makeRequest(sql)
-        pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['help'])
@@ -113,7 +112,6 @@ def handle_help(message):
         if (isAdmin(message.from_user)):
                 bot.send_message(message.chat.id,'<b>Воу палехче ты админ!</b>',parse_mode='html')
                 bot.send_message(message.chat.id,'Вот список команд которые тебе доступны :\n/sendAll - прислать сообщение для всех пользователей бота! Даже с HTML но помоему нельзя вставить новую линию(но ты модешь это пофиксить ленивая ты задница)',parse_mode='html')
-        pass
 
 #-------------------------------------------------
 #                    TOP
@@ -127,7 +125,6 @@ def handle_top(message):
         itembtn2 = types.KeyboardButton('Топ группы')
         markup.add(itembtn1, itembtn2)
         bot.send_message(message.chat.id,'Хочешь узнать топ группы или потока?',parse_mode='html',reply_markup=markup)
-        pass
 
 @bot.message_handler(commands=['subscribe'])
 def handle_subscribe(message):
@@ -135,14 +132,12 @@ def handle_subscribe(message):
         itembtn1 = types.KeyboardButton('Подписка на новые домашки')
         markup.add(itembtn1)
         bot.send_message(message.chat.id,subscribe_help_message,parse_mode='html',reply_markup=markup) 
-        pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['share'])
 def handle_top(message):
         link = "t.me/"+bot.get_me().username
         bot.send_message(message.chat.id,share_message.format(link,link),parse_mode='html')
-        pass
 #-------------------------------------------------
 #                  TEST COMMANDS
 #-------------------------------------------------
@@ -174,7 +169,6 @@ def sendAll(message):
                 i += 1
         scheduler.add_job(SendToAll, 'interval', seconds=10,args=[text],id='SendToAll')
         bot.send_message(message.chat.id,'Ща будет сделано админ! Если че там хтмл разметочка есть ) ')
-        pass
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['status'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
@@ -183,7 +177,6 @@ def status(message):
         regCount = makeRequest("SELECT COUNT(*) FROM users")
         notifyCount = makeRequest("SELECT COUNT(*) FROM subscriptions")
         bot.send_message(message.chat.id,StatusText.format(regCount[0][0],notifyCount[0][0]))
-        pass
 
 #-------------------------------------------------
 #                  DEFAULT HANDLER
@@ -211,8 +204,6 @@ def handleDefault(message):
                 makeRequest('INSERT INTO subscriptions (Type,ChatId) VALUES (?,?)',(1,message.chat.id))
         else:
                 bot.send_message(message.chat.id,error_messages[random.randint(0,2)])
-                pass
-        pass
 
 #-------------------------------------------------
 #                    START!
