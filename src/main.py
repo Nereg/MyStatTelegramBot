@@ -181,13 +181,14 @@ def status(message):
 def handleDefault(message): 
         text = message.text
         if (text == "Топ группы"):
+                markup = types.ReplyKeyboardMarkup()
                 Mymessage = 'Топ группы :\n'
                 global password,APIusername
                 token = API.getKey(password,APIusername)
                 top = API.GetClassLeaderboard(token)
                 for place in top:
                         Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
-                bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True)
+                bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True,reply_markup=markup)
         elif (text == "Топ потока"):
                 Mymessage = 'Топ потока :\n'
                 token = API.getKey(password,APIusername)
