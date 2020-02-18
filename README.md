@@ -42,4 +42,6 @@ MyStat API (собственного производста)(версия ком
 
 Планировщик задач : https://apscheduler.readthedocs.io/en/stable/
 
+# Репозиторий использует лицензию [GNU GPLv3](/LICENSE) 
+
 # English version is coming soon!
