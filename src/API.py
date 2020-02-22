@@ -7,7 +7,7 @@ import sys
 def validate (data):
         try: # Yeah I can`t do it without catching some error (P.S. somehow doesn`t working for GET with auth)
             error = data[0]['message']
-            raise Exception('Error from MyStat ! ' + error)
+            raise Exception(error)
         except KeyError as e:
             return data
 

@@ -1,13 +1,13 @@
-import time , logging.config, sys, logging, sqlite3, API, telebot ,random 
+import time , logging.config, sys, logging, sqlite3, API, telebot ,random ,json
 from os import environ # for geting values from parsed env file
 from dotenv import load_dotenv # for parsing .env files
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from telebot import types # buttons !!!
+from pathlib import Path  # python3 only
 #own modules
 from helpers import *
 from strings import *
-from pathlib import Path  # python3 only
 
 #-------------------------------------------------
 #                   LOADING...
@@ -111,10 +111,6 @@ def handle_help(message):
                 bot.send_message(message.chat.id,'<b>Воу палехче ты админ!</b>',parse_mode='html')
                 bot.send_message(message.chat.id,'Вот список команд которые тебе доступны :\n/sendAll - прислать сообщение для всех пользователей бота! Даже с HTML но помоему нельзя вставить новую линию(но ты модешь это пофиксить ленивая ты задница)',parse_mode='html')
 
-#-------------------------------------------------
-#                    TOP
-#-------------------------------------------------
-
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['top'])
 def handle_top(message):
@@ -136,6 +132,25 @@ def handle_subscribe(message):
 def handle_share(message):
         link = "t.me/"+bot.get_me().username
         bot.send_message(message.chat.id,share_message.format(link,link),parse_mode='html')
+
+# Handles all text messages that contains the commands '/start' or '/help'.
+@bot.message_handler(commands=['login'])
+def handle_login(message):
+        params = message.text
+        params = params.split()
+        if (len(params) <= 1):
+                bot.send_message(message.chat.id,login_help_message,parse_mode='html')
+        elif(len(params) <= 2):
+                bot.send_message(message.chat.id,login_no_username_message,parse_mode='html')
+        elif(len(params) <= 3):
+                try :
+                        token = API.getKey(params[1],params[2])#get access and refresh token for later use
+                        bot.send_message(message.chat.id,login_good_message,parse_mode='html')
+                        print(message.chat.id,message.message_id)
+                        bot.delete_message(chat_id=message.chat.id,message_id=message.message_id)
+                        makeRequest('INSERT INTO login(TelegramChatId,LoginData) VALUES (?,?)',[message.chat.id,token])
+                except Exception as e:
+                        bot.send_message(message.chat.id,login_wrong_password_message.format(e),parse_mode='html')
 #-------------------------------------------------
 #                  TEST COMMANDS
 #-------------------------------------------------
