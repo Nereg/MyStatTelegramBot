@@ -42,7 +42,7 @@
 
 Виртуальные окружения (VENV)(упс не используеться :/ ): https://docs.python-guide.org/dev/virtualenvs/ 
 
-MyStat API (собственного производста)(версия комита 291f3d4) : https://github.com/Nereg/MyStatAPI
+MyStat API (собственного производста)(версия комита 3f691e6) : https://github.com/Nereg/MyStatAPI
 
 Гайд по базе данных : https://habr.com/en/post/321510/
 

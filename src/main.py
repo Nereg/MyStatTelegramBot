@@ -27,6 +27,7 @@ debug = bool(debug) # convert string with bollean to bollean
 def CheckHomework():
         log = Logger('HomeworkCheck')
         token  = API.getKey(password,APIusername) # get token for default login data
+        token = token[0]
         homeworks = API.GetHomeworks(token) #get count of homeworks
         current = homeworks[3]
         res = makeRequest('SELECT * FROM stuff WHERE Type=1')
@@ -43,6 +44,21 @@ def CheckHomework():
         else:
                 log.debug('No new homework !')
                 return
+
+def RefreshAccessTokens():
+        log = Logger('AuthRefresh')
+        log.debug('Started refreshing tokens!')
+        makeRequest('DELETE FROM login WHERE Id NOT IN (SELECT *  FROM (SELECT MIN(Id)FROM login GROUP BY LoginData) temp)')#delete all duplicates
+        tokens = makeRequest('SELECT * FROM login')
+        for auth in tokens:
+                refreshToken = json.loads(auth[2])[1]
+                id = int(auth[0])
+                newToken = API.RefreshToken(refreshToken)
+                log.debug('New token is:{}'.format(newToken[1]))
+                newToken = json.dumps(newToken)
+                makeRequest('UPDATE login SET LoginData = ? WHERE Id=?',[newToken,id])
+
+                
 
 def SendNotifications(type,text):
         scheduler.remove_job('Sender') # yeah remove yourself :/
@@ -86,8 +102,9 @@ executors = {
     'default': {'type': 'threadpool', 'max_workers': 5},
 }
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(CheckHomework, 'interval', minutes=5)
-scheduler.configure(executors=executors)#working just ok witjout storage and made MANY warnings when using so I remove storage
+job = scheduler.add_job(CheckHomework, 'interval', hours=24)
+job = scheduler.add_job(RefreshAccessTokens, 'interval', seconds=8)
+scheduler.configure(executors=executors)#working just ok without storage and made MANY warnings when using so I remove storage
 botname = "@"+bot.get_me().username 
 #-------------------------------------------------
 #                   COMMANDS
@@ -145,8 +162,8 @@ def handle_login(message):
         elif(len(params) <= 3):
                 try :
                         token = API.getKey(params[1],params[2])#get access and refresh token for later use
+                        token = json.dumps(token)#pack array into json
                         bot.send_message(message.chat.id,login_good_message,parse_mode='html')
-                        print(message.chat.id,message.message_id)
                         bot.delete_message(chat_id=message.chat.id,message_id=message.message_id)
                         makeRequest('INSERT INTO login(TelegramChatId,LoginData) VALUES (?,?)',[message.chat.id,token])
                 except Exception as e:
@@ -202,6 +219,7 @@ def handleDefault(message):
                 Mymessage = 'Топ группы :\n'
                 global password,APIusername
                 token = API.getKey(password,APIusername)
+                token = token[0]
                 top = API.GetClassLeaderboard(token)
                 for place in top:
                         Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
@@ -209,6 +227,7 @@ def handleDefault(message):
         elif (text == "Топ потока"):
                 Mymessage = 'Топ потока :\n'
                 token = API.getKey(password,APIusername)
+                token = token[0]
                 top = API.GetStreamLeaderboard(token)
                 for place in top:
                         Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
