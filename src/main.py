@@ -46,6 +46,8 @@ def CheckHomework():
 
 def SendNotifications(type,text):
         scheduler.remove_job('Sender') # yeah remove yourself :/
+        sql = 'DELETE FROM subscriptions WHERE Id NOT IN (SELECT *  FROM (SELECT MIN(Id)FROM subscriptions GROUP BY ChatId) temp)' #sql qury to delete all duplicates
+        makeRequest(sql)
         log = Logger('NotificationSender')
         log.debug('Started sending notifications for {} type!'.format(type))
         List = makeRequest('SELECT * FROM subscriptions WHERE Type =?',(type))
@@ -131,7 +133,7 @@ def handle_subscribe(message):
 
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['share'])
-def handle_top(message):
+def handle_share(message):
         link = "t.me/"+bot.get_me().username
         bot.send_message(message.chat.id,share_message.format(link,link),parse_mode='html')
 #-------------------------------------------------
