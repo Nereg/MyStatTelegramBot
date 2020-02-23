@@ -102,8 +102,8 @@ executors = {
     'default': {'type': 'threadpool', 'max_workers': 5},
 }
 scheduler = BackgroundScheduler()
-job = scheduler.add_job(CheckHomework, 'interval', hours=24)
-job = scheduler.add_job(RefreshAccessTokens, 'interval', seconds=8)
+job = scheduler.add_job(CheckHomework, 'interval', minutes=5)
+job = scheduler.add_job(RefreshAccessTokens, 'interval', hours=24)
 scheduler.configure(executors=executors)#working just ok without storage and made MANY warnings when using so I remove storage
 botname = "@"+bot.get_me().username 
 #-------------------------------------------------
@@ -229,8 +229,9 @@ def handleDefault(message):
                 token = API.getKey(password,APIusername)
                 token = token[0]
                 top = API.GetStreamLeaderboard(token)
+                print(top)
                 for place in top:
-                        Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a>'.format(place['position'],place['photo_path'],place['full_name']) + '\n'
+                        Mymessage = Mymessage + 'Место {}: <a href="{}">{}</a> Очков: {}'.format(place['position'],place['photo_path'],place['full_name'],place['amount']) + '\n'
                 bot.send_message(message.chat.id,Mymessage,parse_mode='html',disable_web_page_preview=True) 
         elif (text == "Подписка на новые домашки"):
                 bot.send_message(message.chat.id,'Окей!\nМаякну если будут новые домашние задания!',parse_mode='html')
