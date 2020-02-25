@@ -1,7 +1,9 @@
 # Телеграм бот для [MyStat](https://mystat.itstep.org/ru/auth/login/index) ! [![CodeFactor](https://www.codefactor.io/repository/github/nereg/mystattelegrambot/badge)](https://www.codefactor.io/repository/github/nereg/mystattelegrambot)
 ## Что умеет ?
-1. Показывать топ потока и группы с ссылочками на фотки !
-2. Уведомлять о новых домашках
+1. Показывать топ потока и группы с ссылочками на фотки ! (/top)
+2. Уведомлять о новых домашках (/subscribe)
+3. **Полная** информация о тебе (/me)
+4. Логин в MyStat (/login)
 # Ссылка на оффициального [бота](https://t.me/testmystatbot)
 ## И это все ?!
 Пока что да. Но! 
@@ -29,7 +31,7 @@
 * `docker run -d --name ИМЯ --mount type=bind,source="$(pwd)"/logs/,target=/main/logs/ АЙДИШНИК`
 
 ## Список : "скоро будет"
-- [ ] Логин в майстат (безопасный!)
+- [x] Логин в майстат (безопасный!)
 - [ ] Авто получение кристаликов за тот QR код на дверях
 - [ ] Более точные уведомления о домашках
 - [ ] Практически любая **твоя** идея

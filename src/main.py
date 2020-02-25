@@ -168,6 +168,27 @@ def handle_login(message):
                         makeRequest('INSERT INTO login(TelegramChatId,LoginData) VALUES (?,?)',[message.chat.id,token])
                 except Exception as e:
                         bot.send_message(message.chat.id,login_wrong_password_message.format(e),parse_mode='html')
+
+@bot.message_handler(commands=['me'])
+def handle_me(message):
+        data = returnAuthData(message.chat.id)
+        print(data)
+        if(data == 0):
+                bot.send_message(message.chat.id,no_auth_message)
+        else:
+                token = data[0]
+                #print(token)
+                userData = API.GetUserData(token)
+                homeworks = API.GetHomeworks(token)
+                points = API.GetPoints(token)
+                #print(userData)
+                #print(homeworks)
+                #print(points)
+                u = userData
+                p = points
+                h = homeworks
+                Mymessage = me_message.format(u['full_name'],u['level'],u['achieves_count'],p[2],p[1],p[0],u['photo'],u['groups'][0]['name'],h[0],h[3],h[4],h[2])
+                bot.send_message(message.chat.id,Mymessage,parse_mode='html')
 #-------------------------------------------------
 #                  TEST COMMANDS
 #-------------------------------------------------
@@ -175,11 +196,8 @@ def handle_login(message):
 # Handles all text messages that contains the commands '/start' or '/help'.
 @bot.message_handler(commands=['test'],func=lambda message:isAdmin(message.from_user)) # hah very easy check for admin
 def test(message):  
-        markup = types.ReplyKeyboardMarkup(row_width=2,one_time_keyboard=True)
-        itembtn1 = types.KeyboardButton('Топ потока')
-        itembtn2 = types.KeyboardButton('Топ группы')
-        markup.add(itembtn1, itembtn2)
-        bot.send_message(message.chat.id,botname,reply_markup=markup)
+        #print(forceRefresh(message.chat.id))
+        bot.send_message(message.chat.id,'sfdsfdsfds')
         pass
 #-------------------------------------------------
 #                  ADMIN COMMANDS

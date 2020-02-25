@@ -5,6 +5,7 @@ import sys
 
 #validate parsed JSON data from MyStat
 def validate (data):
+        print(data)
         try: # Yeah I can`t do it without catching some error (P.S. somehow doesn`t working for GET with auth)
             error = data[0]['message']
             raise Exception('Error from MyStat ! ' + error)
@@ -81,7 +82,6 @@ def GetHomeworks(token):
         # Note L outputs only all done and overdue hometasks. Why ? Because I have only this types of homeworks on my accaunt (not 0!)
         url = 'https://msapi.itstep.org/api/v2/count/homework'
         get = GetWithHeader(token,url)
-        print(get)
         all = get[5]['counter']
         done = get[0]['counter']
         overdue = get[2]['counter']
