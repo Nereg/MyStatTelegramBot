@@ -28,7 +28,7 @@
 * Переименовать его в .env
 * `docker build .`
 * Подождать пока появиться надпись: `Successfully built АЙДИШНИК`
-* `docker run -d --name ИМЯ --mount type=bind,source="$(pwd)"/logs/,target=/main/logs/ АЙДИШНИК`
+* `docker run -d --name ИМЯ --mount type=bind,source="$(pwd)"/,target=/main/ АЙДИШНИК`
 
 ## Список : "скоро будет"
 - [x] Логин в майстат (безопасный!)
